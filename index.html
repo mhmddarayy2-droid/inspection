@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>سیستم بازرسی جهان فولاد</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#00d4ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* ===== تمام استایل‌های قبلی (فشرده) ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; min-height: 100%; }
+        body {
+            font-family: "Vazirmatn", "Tahoma", "Arial", sans-serif;
+            color: #ffffff;
+            background-color: #050a0d;
+            background-image:
+                linear-gradient(90deg, rgba(2, 7, 10, 0.85) 0%, rgba(2, 7, 10, 0.40) 50%, rgba(2, 7, 10, 0.80) 100%),
+                linear-gradient(0deg, rgba(2, 7, 10, 0.90) 0%, rgba(2, 7, 10, 0.10) 55%, rgba(2, 7, 10, 0.70) 100%),
+                url("inspection-background.png");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 4px);
+            opacity: 0.25;
+            z-index: 0;
+        }
+        .container { max-width: 950px; width: 100%; margin: 0 auto; padding: 15px; position: relative; z-index: 1; }
+        
+        /* ===== صفحه ورود ===== */
+        #loginPage { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+        .login-box {
+            background: linear-gradient(135deg, rgba(10, 20, 50, 0.9), rgba(20, 40, 80, 0.8));
+            border: 1px solid rgba(0, 150, 255, 0.15);
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        .login-box .logo-icon { font-size: 48px; color: #00d4ff; margin-bottom: 10px; }
+        .login-box h2 { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 5px; }
+        .login-box .sub-text { font-size: 14px; color: rgba(255, 255, 255, 0.4); margin-bottom: 25px; }
+        .login-box label { display: block; text-align: right; font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.6); margin-bottom: 5px; }
+        .login-box input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #ffffff;
+            font-family: "Vazirmatn", sans-serif;
+            font-size: 16px;
+            margin-bottom: 18px;
+            transition: all 0.3s;
+        }
+        .login-box input:focus { outline: none; border-color: rgba(0, 212, 255, 0.3); background: rgba(255, 255, 255, 0.06); }
+        .login-box input::placeholder { color: rgba(255, 255, 255, 0.2); }
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(145deg, rgba(0, 212, 255, 0.2), rgba(0, 100, 255, 0.08));
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 14px;
+            font-family: "Vazirmatn", sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .login-btn:hover { background: linear-gradient(145deg, rgba(0, 212, 255, 0.3), rgba(0, 100, 255, 0.12)); border-color: rgba(0, 212, 255, 0.4); transform: translateY(-2px); }
+        .login-btn:active { transform: scale(0.97); }
+        .login-error { color: #f44336; font-size: 14px; margin-top: 10px; display: none; }
+
+        /* ===== هدر اصلی ===== */
+        .main-header {
+            text-align: center;
+            padding: 18px 15px 15px 15px;
+            margin-bottom: 18px;
+            background: linear-gradient(135deg, rgba(10, 20, 50, 0.85), rgba(20, 40, 80, 0.7));
+            border: 1px solid rgba(0, 150, 255, 0.12);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .main-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00d4ff, #0070ff, #00d4ff);
+            background-size: 200% 100%;
+            animation: gradientMove 3s ease-in-out infinite;
+        }
+        @keyframes gradientMove { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .logo-container { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .logo-icon-small {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 100, 255, 0.05));
+            border-radius: 14px;
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: #00d4ff;
+        }
+        .header-title h1 { font-size: 22px; font-weight: 900; color: #ffffff; letter-spacing: 2px; font-family: "Vazirmatn", sans-serif; }
+        .header-title h1 .highlight { color: #00d4ff; }
+        .header-title .company-name { font-size: 12px; color: rgba(255, 255, 255, 0.4); letter-spacing: 3px; }
+        .header-title .company-name span { color: rgba(0, 212, 255, 0.6); }
+        .user-info { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        .user-info .user-name { font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.7); }
+        .user-info .user-name i { color: #00d4ff; margin-left: 6px; }
+        .btn-logout { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08); padding: 4px 14px; border-radius: 8px; font-family: "Vazirmatn", sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; color: rgba(255, 255, 255, 0.5); transition: all 0.3s; }
+        .btn-logout:hover { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+
+        .selection-steps { display: flex; justify-content: center; align-items: center; gap: 6px; margin: 12px 0 18px 0; flex-wrap: wrap; }
+        .step-badge {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.4s ease;
+            font-family: "Vazirmatn", sans-serif;
+        }
+        .step-badge.active { background: rgba(0, 212, 255, 0.08); border-color: rgba(0, 212, 255, 0.2); color: #00d4ff; }
+        .step-badge.done { background: rgba(76, 175, 80, 0.08); border-color: rgba(76, 175, 80, 0.15); color: #4caf50; }
+        .step-badge .num {
+            background: rgba(255, 255, 255, 0.06);
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 700;
+        }
+        .step-badge.active .num { background: rgba(0, 212, 255, 0.15); color: #00d4ff; }
+        .step-badge.done .num { background: rgba(76, 175, 80, 0.15); color: #4caf50; }
+        .step-arrow { color: rgba(255, 255, 255, 0.06); font-size: 12px; }
+
+        .btn-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 8px 0; }
+        .btn-industrial {
+            padding: 14px 8px;
+            font-family: "Vazirmatn", sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.4);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .btn-industrial:active { transform: scale(0.95); }
+        .btn-industrial i { font-size: 18px; margin-bottom: 2px; }
+        .btn-industrial .small-text { font-size: 8px; font-weight: 400; opacity: 0.3; }
+        .btn-industrial.station { background: rgba(0, 212, 255, 0.03); border-color: rgba(0, 212, 255, 0.06); }
+        .btn-industrial.station:hover { background: rgba(0, 212, 255, 0.08); border-color: rgba(0, 212, 255, 0.15); color: rgba(255, 255, 255, 0.8); }
+        .btn-industrial.station.active { background: rgba(0, 212, 255, 0.12); border-color: #00d4ff; color: #00d4ff; box-shadow: 0 0 20px rgba(0, 212, 255, 0.06); }
+        
+        .btn-industrial.unit-elect { background: rgba(255, 193, 7, 0.03); border-color: rgba(255, 193, 7, 0.06); }
+        .btn-industrial.unit-elect:hover { background: rgba(255, 193, 7, 0.08); border-color: rgba(255, 193, 7, 0.15); color: rgba(255, 255, 255, 0.8); }
+        .btn-industrial.unit-elect.active { background: rgba(255, 193, 7, 0.12); border-color: #ffc107; color: #ffc107; }
+        
+        .btn-industrial.unit-mech { background: rgba(76, 175, 80, 0.03); border-color: rgba(76, 175, 80, 0.06); }
+        .btn-industrial.unit-mech:hover { background: rgba(76, 175, 80, 0.08); border-color: rgba(76, 175, 80, 0.15); color: rgba(255, 255, 255, 0.8); }
+        .btn-industrial.unit-mech.active { background: rgba(76, 175, 80, 0.12); border-color: #4caf50; color: #4caf50; }
+        
+        .btn-industrial.unit-rolling { background: rgba(156, 39, 176, 0.03); border-color: rgba(156, 39, 176, 0.06); }
+        .btn-industrial.unit-rolling:hover { background: rgba(156, 39, 176, 0.08); border-color: rgba(156, 39, 176, 0.15); color: rgba(255, 255, 255, 0.8); }
+        .btn-industrial.unit-rolling.active { background: rgba(156, 39, 176, 0.12); border-color: #9c27b0; color: #9c27b0; }
+        
+        .btn-industrial.unit-furnace { background: rgba(244, 67, 54, 0.03); border-color: rgba(244, 67, 54, 0.06); }
+        .btn-industrial.unit-furnace:hover { background: rgba(244, 67, 54, 0.08); border-color: rgba(244, 67, 54, 0.15); color: rgba(255, 255, 255, 0.8); }
+        .btn-industrial.unit-furnace.active { background: rgba(244, 67, 54, 0.12); border-color: #f44336; color: #f44336; }
+        
+        .btn-industrial.unit-machining { background: rgba(33, 150, 243, 0.03); border-color: rgba(33, 150, 243, 0.06); }
+        .btn-industrial.unit-machining:hover { background: rgba(33, 150, 243, 0.08); border-color: rgba(33, 150, 243, 0.15); color: rgba(255, 255, 255, 0.8); }
+        .btn-industrial.unit-machining.active { background: rgba(33, 150, 243, 0.12); border-color: #2196f3; color: #2196f3; }
+
+        .btn-industrial.daily { background: rgba(0, 200, 100, 0.03); border-color: rgba(0, 200, 100, 0.06); }
+        .btn-industrial.daily:hover { background: rgba(0, 200, 100, 0.08); border-color: rgba(0, 200, 100, 0.15); color: rgba(255, 255, 255, 0.8); }
+        .btn-industrial.daily.active { background: rgba(0, 200, 100, 0.12); border-color: #4caf50; color: #4caf50; }
+        .btn-industrial.weekly { background: rgba(255, 160, 0, 0.03); border-color: rgba(255, 160, 0, 0.06); }
+        .btn-industrial.weekly:hover { background: rgba(255, 160, 0, 0.08); border-color: rgba(255, 160, 0, 0.15); color: rgba(255, 255, 255, 0.8); }
+        .btn-industrial.weekly.active { background: rgba(255, 160, 0, 0.12); border-color: #ff9800; color: #ff9800; }
+        .btn-industrial.monthly { background: rgba(255, 50, 50, 0.03); border-color: rgba(255, 50, 50, 0.06); }
+        .btn-industrial.monthly:hover { background: rgba(255, 50, 50, 0.08); border-color: rgba(255, 50, 50, 0.15); color: rgba(255, 255, 255, 0.8); }
+        .btn-industrial.monthly.active { background: rgba(255, 50, 50, 0.12); border-color: #f44336; color: #f44336; }
+
+        .btn-start {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(145deg, rgba(0, 212, 255, 0.08), rgba(0, 100, 255, 0.03));
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 14px;
+            font-family: "Vazirmatn", sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.25);
+            cursor: not-allowed;
+            transition: all 0.4s ease;
+            margin-top: 10px;
+        }
+        .btn-start.active { color: #ffffff; cursor: pointer; background: linear-gradient(145deg, rgba(0, 212, 255, 0.15), rgba(0, 100, 255, 0.06)); border-color: rgba(0, 212, 255, 0.2); }
+        .btn-start.active:active { transform: scale(0.97); }
+        .btn-start i { margin-left: 8px; font-size: 15px; }
+
+        .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
+        .feature-item { text-align: center; padding: 10px 6px; background: rgba(255, 255, 255, 0.02); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.03); }
+        .feature-item i { font-size: 20px; color: #00d4ff; display: block; margin-bottom: 3px; opacity: 0.6; }
+        .feature-item .label { font-size: 10px; font-weight: 600; color: rgba(255, 255, 255, 0.4); letter-spacing: 1px; font-family: "Vazirmatn", sans-serif; }
+        .footer { text-align: center; padding: 10px 0 2px 0; color: rgba(255, 255, 255, 0.06); font-size: 9px; font-weight: 600; letter-spacing: 2px; }
+        .footer span { color: rgba(255, 255, 255, 0.12); }
+        .footer .sep { color: rgba(255, 255, 255, 0.03); margin: 0 4px; }
+
+        .hidden { display: none !important; }
+
+        /* ===== صفحه چک‌لیست ===== */
+        .checklist-header-custom { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); flex-wrap: wrap; gap: 8px; }
+        .checklist-header-custom h3 { font-size: 17px; font-weight: 700; color: #ffffff; font-family: "Vazirmatn", sans-serif; }
+        .checklist-header-custom h3 i { color: #00d4ff; margin-left: 8px; }
+        .btn-back { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08); padding: 6px 16px; border-radius: 10px; font-family: "Vazirmatn", sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; color: rgba(255, 255, 255, 0.6); transition: all 0.3s; }
+        .btn-back:hover { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+        .btn-back i { margin-left: 6px; }
+        .selection-info { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+        .selection-info .info-item { color: rgba(255, 255, 255, 0.6); font-size: 13px; font-weight: 600; background: rgba(255, 255, 255, 0.04); padding: 4px 14px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.04); font-family: "Vazirmatn", sans-serif; }
+        .selection-info .info-item i { color: #00d4ff; margin-left: 6px; }
+        .progress-wrapper { margin: 10px 0 12px 0; }
+        .progress-bar { width: 100%; height: 5px; background: rgba(255, 255, 255, 0.05); border-radius: 30px; overflow: hidden; }
+        .progress-bar .fill { height: 100%; background: linear-gradient(90deg, #00d4ff, #0070ff); border-radius: 30px; width: 0%; transition: width 0.5s ease; }
+        .progress-stats { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255, 255, 255, 0.4); margin-top: 5px; font-family: "Vazirmatn", sans-serif; }
+        .progress-stats .badge-ok { color: #4caf50; font-weight: 700; }
+        .progress-stats .badge-fail { color: #f44336; font-weight: 700; }
+
+        .accordion { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+        .accordion-title { padding: 12px 16px; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.02); color: rgba(255, 255, 255, 0.8); transition: all 0.3s; user-select: none; font-family: "Vazirmatn", sans-serif; }
+        .accordion-title:hover { background: rgba(255, 255, 255, 0.04); }
+        .accordion-title .badge-count { background: rgba(0, 212, 255, 0.12); color: #00d4ff; padding: 1px 12px; border-radius: 30px; font-size: 11px; }
+        .accordion-body { padding: 4px 12px 12px 12px; display: none; border-top: 1px solid rgba(255, 255, 255, 0.04); }
+        .item-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); flex-wrap: wrap; gap: 4px; }
+        .item-row:last-child { border-bottom: none; }
+        .item-text { flex: 2; font-size: 13px; color: rgba(255, 255, 255, 0.85); min-width: 120px; font-family: "Vazirmatn", sans-serif; }
+        .item-id-badge { background: rgba(0, 212, 255, 0.08); color: #00d4ff; padding: 1px 8px; border-radius: 20px; font-size: 9px; font-weight: 700; margin-right: 6px; border: 1px solid rgba(0, 212, 255, 0.08); }
+        .item-meta { display: block; font-size: 10px; color: rgba(255, 255, 255, 0.3); margin-top: 1px; }
+        .item-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .status-btn { padding: 4px 14px; border: 2px solid rgba(255, 255, 255, 0.08); border-radius: 30px; background: transparent; font-family: "Vazirmatn", sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.25s; min-width: 48px; color: rgba(255, 255, 255, 0.3); }
+        .status-btn:active { transform: scale(0.95); }
+        .status-btn.ok { border-color: rgba(76, 175, 80, 0.2); }
+        .status-btn.ok.active { background: linear-gradient(145deg, #2e7d32, #4caf50); border-color: #4caf50; color: white; }
+        .status-btn.fail { border-color: rgba(244, 67, 54, 0.2); }
+        .status-btn.fail.active { background: linear-gradient(145deg, #c62828, #f44336); border-color: #f44336; color: white; }
+        .fail-box { background: rgba(255, 152, 0, 0.05); border: 1px solid rgba(255, 152, 0, 0.08); border-radius: 8px; padding: 12px; margin-top: 8px; display: none; width: 100%; }
+        .fail-box label { font-weight: 600; font-size: 11px; color: rgba(255, 255, 255, 0.6); display: block; margin-top: 4px; font-family: "Vazirmatn", sans-serif; }
+        .fail-box label:first-child { margin-top: 0; }
+        .fail-box textarea, .fail-box input[type="text"] { width: 100%; padding: 8px 10px; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; font-family: "Vazirmatn", sans-serif; font-size: 13px; background: rgba(255, 255, 255, 0.04); color: #ffffff; margin-top: 3px; }
+        .fail-box textarea:focus, .fail-box input[type="text"]:focus { outline: none; border-color: rgba(0, 212, 255, 0.2); }
+        .fail-box textarea::placeholder, .fail-box input[type="text"]::placeholder { color: rgba(255, 255, 255, 0.2); }
+        .photo-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+        .btn-photo { background: rgba(0, 212, 255, 0.08); border: 1px solid rgba(0, 212, 255, 0.12); color: #00d4ff; padding: 6px 16px; border-radius: 6px; font-family: "Vazirmatn", sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-photo:active { transform: scale(0.95); }
+        .photo-status { color: #4caf50; font-size: 12px; font-weight: 600; }
+        .btn-submit { width: 100%; padding: 16px; background: linear-gradient(145deg, rgba(0, 200, 100, 0.08), rgba(0, 150, 80, 0.03)); border: 1px solid rgba(0, 200, 100, 0.08); border-radius: 14px; font-family: "Vazirmatn", sans-serif; font-size: 17px; font-weight: 700; color: rgba(255, 255, 255, 0.25); cursor: not-allowed; transition: all 0.3s; margin-top: 15px; }
+        .btn-submit:not(:disabled) { color: #ffffff; cursor: pointer; background: linear-gradient(145deg, rgba(0, 200, 100, 0.15), rgba(0, 150, 80, 0.05)); border-color: rgba(0, 200, 100, 0.15); }
+        .btn-submit:not(:disabled):active { transform: scale(0.97); }
+
+        .loading { text-align: center; padding: 30px 0; color: rgba(255, 255, 255, 0.3); font-size: 14px; font-family: "Vazirmatn", sans-serif; }
+        .spinner { width: 30px; height: 30px; border: 3px solid rgba(255, 255, 255, 0.05); border-top: 3px solid #00d4ff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .toast { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: rgba(0, 20, 40, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(0, 212, 255, 0.08); color: #ffffff; padding: 12px 24px; border-radius: 12px; font-family: "Vazirmatn", sans-serif; font-size: 14px; font-weight: 600; z-index: 9999; opacity: 0; transition: opacity 0.4s ease; pointer-events: none; max-width: 90%; text-align: center; }
+        .toast.show { opacity: 1; }
+
+        @media (max-width: 768px) { .btn-group { grid-template-columns: repeat(3, 1fr); gap: 8px; } .container { padding: 10px; } .header-title h1 { font-size: 18px; } .logo-icon-small { width: 40px; height: 40px; font-size: 20px; } .features { grid-template-columns: repeat(2, 1fr); gap: 8px; } .btn-industrial { font-size: 12px; padding: 12px 6px; border-radius: 10px; } .btn-industrial i { font-size: 16px; } .btn-start { font-size: 15px; padding: 14px; } .login-box { padding: 30px 20px; } }
+        @media (max-width: 500px) { .btn-group { grid-template-columns: repeat(2, 1fr); gap: 6px; } .header-title h1 { font-size: 16px; } .header-title .company-name { font-size: 10px; letter-spacing: 2px; } .logo-icon-small { width: 35px; height: 35px; font-size: 17px; } .btn-industrial { font-size: 11px; padding: 10px 4px; border-radius: 8px; } .btn-industrial i { font-size: 14px; } .btn-industrial .small-text { font-size: 7px; } .features { grid-template-columns: 1fr 1fr; gap: 4px; } .feature-item { padding: 8px 4px; } .feature-item i { font-size: 16px; } .feature-item .label { font-size: 9px; } .btn-start { font-size: 13px; padding: 12px; } .selection-steps { gap: 4px; } .step-badge { font-size: 9px; padding: 4px 8px; gap: 3px; } .step-badge .num { width: 15px; height: 15px; font-size: 8px; } .step-arrow { font-size: 10px; } .footer { font-size: 8px; } .selection-info .info-item { font-size: 11px; padding: 3px 10px; } .item-text { font-size: 12px; min-width: 80px; } .status-btn { font-size: 10px; padding: 3px 10px; min-width: 38px; } .btn-submit { font-size: 14px; padding: 12px; } .login-box { padding: 20px 15px; } .login-box h2 { font-size: 18px; } .login-box input { padding: 12px 14px; font-size: 14px; } }
+        @media (max-width: 380px) { .btn-group { grid-template-columns: 1fr 1fr; gap: 4px; } .btn-industrial { font-size: 10px; padding: 8px 3px; border-radius: 6px; } .btn-industrial i { font-size: 12px; } }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 212, 255, 0.25); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ============================================================ -->
+        <!-- صفحه ورود -->
+        <!-- ============================================================ -->
+        <div id="loginPage">
+            <div class="login-box">
+                <div class="logo-icon"><i class="fas fa-industry"></i></div>
+                <h2>سیستم بازرسی</h2>
+                <p class="sub-text">جهان فولاد · ورود به سیستم</p>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <label for="username">👤 نام بازرس</label>
+                    <input type="text" id="username" placeholder="نام و نام خانوادگی خود را وارد کنید..." required autofocus>
+                    <label for="password">🔒 رمز عبور</label>
+                    <input type="password" id="password" placeholder="رمز عبور را وارد کنید..." required>
+                    <div id="loginError" class="login-error">❌ نام کاربری یا رمز عبور اشتباه است!</div>
+                    <button type="submit" class="login-btn"><i class="fas fa-sign-in-alt"></i> ورود به سیستم</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- صفحه اصلی -->
+        <!-- ============================================================ -->
+        <div id="appMain" class="hidden">
+            <div class="main-header">
+                <div class="logo-container">
+                    <div class="logo-icon-small"><i class="fas fa-industry"></i></div>
+                    <div class="header-title">
+                        <h1>INSPECTION <span class="highlight">SYSTEM</span></h1>
+                        <div class="company-name"><span>جهان فولاد</span> · سیستم بازرسی تجهیزات</div>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <span class="user-name"><i class="fas fa-user-check"></i> <span id="displayName">---</span></span>
+                    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</button>
+                </div>
+            </div>
+
+            <div class="selection-steps">
+                <div class="step-badge active" id="stepBadge1"><span class="num">1</span> ایستگاه</div>
+                <span class="step-arrow"><i class="fas fa-chevron-left"></i></span>
+                <div class="step-badge" id="stepBadge2"><span class="num">2</span> واحد</div>
+                <span class="step-arrow"><i class="fas fa-chevron-left"></i></span>
+                <div class="step-badge" id="stepBadge3"><span class="num">3</span> تناوب</div>
+            </div>
+
+            <div id="stepStation">
+                <div class="btn-group">
+                    <button class="btn-industrial station" onclick="selectStation('کوره')"><i class="fas fa-industry"></i> کوره <span class="small-text">Furnace</span></button>
+                    <button class="btn-industrial station" onclick="selectStation('رافینگ')"><i class="fas fa-fire"></i> رافینگ <span class="small-text">Refining</span></button>
+                    <button class="btn-industrial station" onclick="selectStation('نورد')"><i class="fas fa-cogs"></i> نورد <span class="small-text">Rolling</span></button>
+                    <button class="btn-industrial station" onclick="selectStation('تراشکاری')"><i class="fas fa-tools"></i> تراشکاری <span class="small-text">Machining</span></button>
+                    <button class="btn-industrial station" onclick="selectStation('برش محصول')"><i class="fas fa-cut"></i> برش محصول <span class="small-text">Cutting</span></button>
+                    <button class="btn-industrial station" onclick="selectStation('رولگان بعد استند ۷')"><i class="fas fa-arrows-alt-h"></i> رولگان بعد استند ۷ <span class="small-text">Roller S7</span></button>
+                    <button class="btn-industrial station" onclick="selectStation('بستر')"><i class="fas fa-layer-group"></i> بستر <span class="small-text">Bed</span></button>
+                    <button class="btn-industrial station" onclick="selectStation('آبرسانی')"><i class="fas fa-water"></i> آبرسانی <span class="small-text">Water Supply</span></button>
+                    <button class="btn-industrial station" onclick="selectStation('بسته بندی')"><i class="fas fa-boxes"></i> بسته بندی <span class="small-text">Packaging</span></button>
+                    <button class="btn-industrial station" onclick="selectStation('یوتیلیتی')"><i class="fas fa-plug"></i> یوتیلیتی <span class="small-text">Utility</span></button>
+                    <button class="btn-industrial station" onclick="selectStation('جرثقیل')"><i class="fas fa-crane"></i> جرثقیل <span class="small-text">Crane</span></button>
+                    <button class="btn-industrial station" onclick="selectStation('پست و برق')"><i class="fas fa-bolt"></i> پست و برق <span class="small-text">Substation</span></button>
+                </div>
+            </div>
+
+            <div id="stepUnit" class="hidden">
+                <div class="btn-group">
+                    <button class="btn-industrial unit-elect" onclick="selectUnit('برق')"><i class="fas fa-bolt"></i> برق <span class="small-text">Electrical</span></button>
+                    <button class="btn-industrial unit-mech" onclick="selectUnit('مکانیک')"><i class="fas fa-tools"></i> مکانیک <span class="small-text">Mechanical</span></button>
+                    <button class="btn-industrial unit-rolling" onclick="selectUnit('نورد')"><i class="fas fa-rolling"></i> نورد <span class="small-text">Rolling</span></button>
+                    <button class="btn-industrial unit-furnace" onclick="selectUnit('کوره')"><i class="fas fa-fire"></i> کوره <span class="small-text">Furnace</span></button>
+                    <button class="btn-industrial unit-machining" onclick="selectUnit('تراشکاری')"><i class="fas fa-cut"></i> تراشکاری <span class="small-text">Machining</span></button>
+                </div>
+            </div>
+
+            <div id="stepFrequency" class="hidden">
+                <div class="btn-group">
+                    <button class="btn-industrial daily" onclick="selectFrequency('D')"><i class="fas fa-sun"></i> روزانه <span class="small-text">Daily</span></button>
+                    <button class="btn-industrial weekly" onclick="selectFrequency('W')"><i class="fas fa-calendar-week"></i> هفتگی <span class="small-text">Weekly</span></button>
+                    <button class="btn-industrial monthly" onclick="selectFrequency('M')"><i class="fas fa-calendar-alt"></i> ماهانه <span class="small-text">Monthly</span></button>
+                </div>
+            </div>
+
+            <button class="btn-start" id="btnStart" onclick="startInspection()" disabled>
+                <i class="fas fa-play"></i> شروع بازرسی
+            </button>
+
+            <div class="features">
+                <div class="feature-item"><i class="fas fa-bullseye"></i><div class="label">دقت بالا</div></div>
+                <div class="feature-item"><i class="fas fa-shield-alt"></i><div class="label">ایمنی بیشتر</div></div>
+                <div class="feature-item"><i class="fas fa-chart-line"></i><div class="label">گزارش لحظه‌ای</div></div>
+                <div class="feature-item"><i class="fas fa-clock"></i><div class="label">صرفه‌جویی در زمان</div></div>
+            </div>
+            <div class="footer">
+                <span>QUALITY</span><span class="sep">•</span>
+                <span>SAFETY</span><span class="sep">•</span>
+                <span>RELIABILITY</span>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- صفحه چک‌لیست -->
+        <!-- ============================================================ -->
+        <div id="pageChecklist" class="hidden">
+            <div class="main-header" style="padding:12px 15px;margin-bottom:12px;">
+                <div class="logo-container" style="gap:8px;">
+                    <div class="logo-icon-small" style="width:35px;height:35px;font-size:17px;"><i class="fas fa-clipboard-list"></i></div>
+                    <div class="header-title">
+                        <h1 style="font-size:17px;">چک‌لیست <span class="highlight">بازرسی</span></h1>
+                        <div class="company-name" style="font-size:10px;" id="listTitle">---</div>
+                    </div>
+                </div>
+                <div class="user-info" style="border-top:none;padding-top:0;margin-top:4px;">
+                    <span class="user-name" style="font-size:12px;"><i class="fas fa-user-check"></i> <span id="checklistInspector">---</span></span>
+                </div>
+            </div>
+
+            <div class="checklist-header-custom">
+                <div class="selection-info">
+                    <span class="info-item"><i class="fas fa-map-marker-alt"></i> <span id="selStation">---</span></span>
+                    <span class="info-item"><i class="fas fa-tools"></i> <span id="selUnit">---</span></span>
+                    <span class="info-item"><i class="fas fa-calendar-alt"></i> <span id="selFrequency">---</span></span>
+                </div>
+                <button class="btn-back" onclick="backToMain()"><i class="fas fa-arrow-right"></i> بازگشت</button>
+            </div>
+
+            <div class="progress-wrapper">
+                <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+                <div class="progress-stats">
+                    <span>✅ <span class="badge-ok" id="okCount">0</span> OK</span>
+                    <span id="progressText">۰ از ۰</span>
+                    <span>❌ <span class="badge-fail" id="failCount">0</span> FAIL</span>
+                </div>
+            </div>
+
+            <div id="itemsContainer">
+                <div class="loading"><div class="spinner"></div><span>در حال بارگذاری آیتم‌ها...</span></div>
+            </div>
+
+            <button class="btn-submit" id="submitBtn" onclick="submitInspection()" disabled>
+                <i class="fas fa-save"></i> ثبت و پایان بازرسی
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================================ -->
+    <!-- JavaScript -->
+    <!-- ============================================================ -->
+    <script>
+        // ============================================================
+        // لینک Web App
+        // ============================================================
+        var APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2255VPR-eFisz6rP6OFyjKYEoAPiiNqQNQSKnd6b7MsoXPSWHHk1vXZT1It0j3UbU/exec";
+
+        // ============================================================
+        // لیست کامل بازرسان
+        // ============================================================
+        var CURRENT_USER = '';
+
+        var USERS = {
+            'علی محمدی': '1234',
+            'رضا کریمی': '5678',
+            'سعید نورد': '3333',
+            'کریم تراش': '5555',
+            'حسن کوره': '2222',
+            'محمد برق': '1111',
+            'احمد برق': '4444',
+            'حسین برق': '6666',
+            'ناصر برق': '7777',
+            'مهدی برق': '8888',
+            'مدیر': 'admin'
+        };
+
+        function handleLogin(event) {
+            event.preventDefault();
+            var username = document.getElementById('username').value.trim();
+            var password = document.getElementById('password').value.trim();
+            if (USERS[username] && USERS[username] === password) {
+                CURRENT_USER = username;
+                document.getElementById('displayName').textContent = username;
+                document.getElementById('checklistInspector').textContent = username;
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('appMain').classList.remove('hidden');
+                document.getElementById('loginError').style.display = 'none';
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        }
+
+        function logout() {
+            CURRENT_USER = '';
+            document.getElementById('appMain').classList.add('hidden');
+            document.getElementById('pageChecklist').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        // ============================================================
+        // توابع اصلی
+        // ============================================================
+        var SELECTED_STATION = '';
+        var SELECTED_UNIT = '';
+        var SELECTED_FREQ = '';
+        var SELECTED_FREQ_CODE = '';
+        var START_TIME = null;
+        var currentItems = [];
+        var inspectionId = '';
+        var isSubmitting = false;
+
+        function getPersianDateOnly() {
+            var now = new Date();
+            return now.toLocaleDateString('fa-IR');
+        }
+
+        function getPersianTimeOnly() {
+            var now = new Date();
+            return now.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getDuration() {
+            if (!START_TIME) return '0 دقیقه';
+            var now = new Date();
+            var diffMs = now - START_TIME;
+            var diffMinutes = Math.floor(diffMs / 60000);
+            if (diffMinutes < 1) return 'کمتر از ۱ دقیقه';
+            return diffMinutes + ' دقیقه';
+        }
+
+        function selectStation(station) {
+            SELECTED_STATION = station;
+            document.querySelectorAll('.btn-industrial.station').forEach(function(btn) {
+                btn.classList.remove('active');
+                if (btn.textContent.trim().includes(station)) btn.classList.add('active');
+            });
+            document.getElementById('stepUnit').classList.remove('hidden');
+            document.getElementById('stepStation').style.display = 'none';
+            document.getElementById('stepBadge1').classList.add('done');
+            document.getElementById('stepBadge1').classList.remove('active');
+            document.getElementById('stepBadge2').classList.add('active');
+            setTimeout(function() { document.getElementById('stepUnit').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 200);
+            updateStartButton();
+        }
+
+        function selectUnit(unit) {
+            SELECTED_UNIT = unit;
+            document.querySelectorAll('.btn-industrial.unit-elect, .btn-industrial.unit-mech, .btn-industrial.unit-rolling, .btn-industrial.unit-furnace, .btn-industrial.unit-machining').forEach(function(btn) {
+                btn.classList.remove('active');
+                if (btn.textContent.trim().includes(unit)) btn.classList.add('active');
+            });
+            document.getElementById('stepFrequency').classList.remove('hidden');
+            document.getElementById('stepUnit').style.display = 'none';
+            document.getElementById('stepBadge2').classList.add('done');
+            document.getElementById('stepBadge2').classList.remove('active');
+            document.getElementById('stepBadge3').classList.add('active');
+            setTimeout(function() { document.getElementById('stepFrequency').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 200);
+            updateStartButton();
+        }
+
+        function selectFrequency(freq) {
+            var freqMap = { 'D': 'روزانه', 'W': 'هفتگی', 'M': 'ماهانه' };
+            SELECTED_FREQ = freqMap[freq] || 'روزانه';
+            SELECTED_FREQ_CODE = freq;
+            document.querySelectorAll('.btn-industrial.daily, .btn-industrial.weekly, .btn-industrial.monthly').forEach(function(btn) {
+                btn.classList.remove('active');
+                if (btn.textContent.trim().includes(SELECTED_FREQ)) btn.classList.add('active');
+            });
+            document.getElementById('stepFrequency').style.display = 'none';
+            document.getElementById('stepBadge3').classList.add('done');
+            document.getElementById('stepBadge3').classList.remove('active');
+            setTimeout(function() { document.getElementById('btnStart').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 200);
+            updateStartButton();
+        }
+
+        function updateStartButton() {
+            var btn = document.getElementById('btnStart');
+            if (SELECTED_STATION && SELECTED_UNIT && SELECTED_FREQ) {
+                btn.disabled = false;
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="fas fa-play"></i> شروع بازرسی';
+            } else {
+                btn.disabled = true;
+                btn.classList.remove('active');
+                var parts = [];
+                if (!SELECTED_STATION) parts.push('ایستگاه');
+                if (!SELECTED_UNIT) parts.push('واحد');
+                if (!SELECTED_FREQ) parts.push('تناوب');
+                btn.innerHTML = '<i class="fas fa-lock"></i> انتخاب ' + parts.join(' و ') + ' الزامی است';
+            }
+        }
+
+        function startInspection() {
+            if (!SELECTED_STATION || !SELECTED_UNIT || !SELECTED_FREQ) {
+                showToast('⚠️ لطفاً همه موارد را انتخاب کنید.');
+                return;
+            }
+            if (!CURRENT_USER) {
+                showToast('⚠️ لطفاً ابتدا وارد سیستم شوید.');
+                return;
+            }
+            START_TIME = new Date();
+            document.getElementById('appMain').classList.add('hidden');
+            document.getElementById('pageChecklist').classList.remove('hidden');
+            document.getElementById('selStation').textContent = SELECTED_STATION;
+            document.getElementById('selUnit').textContent = SELECTED_UNIT;
+            document.getElementById('selFrequency').textContent = SELECTED_FREQ;
+            document.getElementById('listTitle').textContent = SELECTED_FREQ + ' — ' + SELECTED_STATION + ' ' + SELECTED_UNIT;
+            document.getElementById('checklistInspector').textContent = CURRENT_USER;
+            loadChecklist(SELECTED_FREQ_CODE);
+        }
+
+        function backToMain() {
+            document.getElementById('pageChecklist').classList.add('hidden');
+            document.getElementById('appMain').classList.remove('hidden');
+            document.getElementById('stepStation').style.display = 'block';
+            document.getElementById('stepUnit').classList.add('hidden');
+            document.getElementById('stepUnit').style.display = '';
+            document.getElementById('stepFrequency').classList.add('hidden');
+            document.getElementById('stepFrequency').style.display = '';
+            document.getElementById('stepBadge1').classList.add('active');
+            document.getElementById('stepBadge1').classList.remove('done');
+            document.getElementById('stepBadge2').classList.remove('active', 'done');
+            document.getElementById('stepBadge3').classList.remove('active', 'done');
+            document.querySelectorAll('.btn-industrial').forEach(function(btn) { btn.classList.remove('active'); });
+            currentItems = [];
+            isSubmitting = false;
+            START_TIME = null;
+            var submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> ثبت و پایان بازرسی';
+            submitBtn.disabled = true;
+            var startBtn = document.getElementById('btnStart');
+            startBtn.disabled = true;
+            startBtn.classList.remove('active');
+            startBtn.innerHTML = '<i class="fas fa-lock"></i> انتخاب ایستگاه و واحد و تناوب الزامی است';
+            SELECTED_STATION = '';
+            SELECTED_UNIT = '';
+            SELECTED_FREQ = '';
+            SELECTED_FREQ_CODE = '';
+        }
+
+        // ============================================================
+        // بارگذاری و رندر
+        // ============================================================
+        function loadChecklist(freq) {
+            var freqMap = { 'D': 'روزانه', 'W': 'هفتگی', 'M': 'ماهانه' };
+            var freqLabel = freqMap[freq] || 'روزانه';
+            var now = new Date();
+            var ts = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0') + String(now.getHours()).padStart(2, '0') + String(now.getMinutes()).padStart(2, '0');
+            inspectionId = 'INS-' + ts;
+            document.getElementById('itemsContainer').innerHTML = '<div class="loading"><div class="spinner"></div>در حال بارگذاری آیتم‌ها...</div>';
+            var url = APP_SCRIPT_URL + '?action=getItems&station=' + encodeURIComponent(SELECTED_STATION) + '&unit=' + encodeURIComponent(SELECTED_UNIT) + '&frequency=' + freq;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            var items = JSON.parse(xhr.responseText);
+                            if (!items || items.length === 0) {
+                                document.getElementById('itemsContainer').innerHTML = '<div class="loading" style="color:rgba(255,255,255,0.4);">⚠️ هیچ آیتمی برای این چک‌لیست یافت نشد.<br><small style="font-size:11px;">ایستگاه: ' + SELECTED_STATION + ' | واحد: ' + SELECTED_UNIT + ' | تناوب: ' + freqLabel + '</small></div>';
+                                return;
+                            }
+                            currentItems = items.map(function(item, index) {
+                                return { id: index, itemId: item.itemId || '', station: item.station || '', mechanism: item.mechanism || '', system: item.system || '', controlItem: item.controlItem || '', skillLevel: item.skillLevel || '', unit: item.unit || '', frequency: item.frequency || '', status: null, failDesc: '', failAction: '', photoBase64: null, photoUrl: '' };
+                            });
+                            renderChecklist();
+                            updateProgress();
+                        } catch (e) {
+                            document.getElementById('itemsContainer').innerHTML = '<div class="loading" style="color:#f44336;">❌ خطا در پردازش داده‌ها: ' + e.message + '</div>';
+                        }
+                    } else {
+                        document.getElementById('itemsContainer').innerHTML = '<div class="loading" style="color:#ff9800;">⚠️ خطا در دریافت اطلاعات (کد ' + xhr.status + ')<br><button onclick="loadChecklist(\'' + freq + '\')" style="margin-top:12px;padding:10px 24px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.15);border-radius:10px;color:#00d4ff;font-family:Vazirmatn;font-size:13px;cursor:pointer;">🔄 تلاش مجدد</button></div>';
+                    }
+                }
+            };
+            xhr.onerror = function() {
+                document.getElementById('itemsContainer').innerHTML = '<div class="loading" style="color:#f44336;">❌ خطا در ارتباط با سرور.<br><small style="font-size:11px;">لطفاً اتصال اینترنت خود را بررسی کنید.</small><br><button onclick="loadChecklist(\'' + freq + '\')" style="margin-top:12px;padding:10px 24px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.15);border-radius:10px;color:#00d4ff;font-family:Vazirmatn;font-size:13px;cursor:pointer;">🔄 تلاش مجدد</button></div>';
+            };
+            xhr.send();
+        }
+
+        function renderChecklist() {
+            var container = document.getElementById('itemsContainer');
+            container.innerHTML = '';
+            var groups = {};
+            currentItems.forEach(function(item) { var key = item.system || 'سایر'; if (!groups[key]) groups[key] = []; groups[key].push(item); });
+            var sortedKeys = Object.keys(groups).sort();
+            sortedKeys.forEach(function(systemName) {
+                var items = groups[systemName];
+                var accordion = document.createElement('div');
+                accordion.className = 'accordion';
+                var title = document.createElement('div');
+                title.className = 'accordion-title';
+                var totalItems = items.length;
+                var doneItems = items.filter(function(i) { return i.status !== null; }).length;
+                title.innerHTML = '<span><i class="fas fa-cogs" style="color:#00d4ff;margin-left:8px;"></i>' + systemName + '</span><span class="badge-count">' + doneItems + '/' + totalItems + '</span>';
+                title.onclick = function(e) {
+                    if (e.target.closest('.status-btn') || e.target.closest('textarea') || e.target.closest('input') || e.target.closest('.btn-photo')) return;
+                    var body = this.nextElementSibling;
+                    body.style.display = body.style.display === 'block' ? 'none' : 'block';
+                };
+                var body = document.createElement('div');
+                body.className = 'accordion-body';
+                items.forEach(function(item) {
+                    var row = document.createElement('div');
+                    row.className = 'item-row';
+                    row.id = 'row-' + item.id;
+                    var textDiv = document.createElement('div');
+                    textDiv.className = 'item-text';
+                    textDiv.innerHTML = '<span>' + item.controlItem + '</span><span class="item-id-badge">' + item.itemId + '</span><span class="item-meta">' + item.mechanism + ' | ' + item.skillLevel + '</span>';
+                    var actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'item-actions';
+                    var btnOk = document.createElement('button');
+                    btnOk.className = 'status-btn ok';
+                    btnOk.innerHTML = '✅ OK';
+                    btnOk.onclick = function(e) { e.stopPropagation();
+                        setStatus(item.id, 'OK'); };
+                    var btnFail = document.createElement('button');
+                    btnFail.className = 'status-btn fail';
+                    btnFail.innerHTML = '❌ FAIL';
+                    btnFail.onclick = function(e) { e.stopPropagation();
+                        setStatus(item.id, 'FAIL'); };
+                    actionsDiv.appendChild(btnOk);
+                    actionsDiv.appendChild(btnFail);
+                    var failBox = document.createElement('div');
+                    failBox.className = 'fail-box';
+                    failBox.id = 'fail-box-' + item.id;
+                    failBox.innerHTML = '<label><i class="fas fa-exclamation-triangle" style="color:#ff9800;"></i> توضیح عدم انطباق:</label><textarea id="fail-desc-' + item.id + '" placeholder="مشکل را توضیح دهید..." rows="2"></textarea><label><i class="fas fa-wrench"></i> اقدام انجام شده:</label><input type="text" id="fail-action-' + item.id + '" placeholder="اقدام انجام شده را وارد کنید..."><div class="photo-row"><button class="btn-photo" onclick="capturePhoto(' + item.id + ')"><i class="fas fa-camera"></i> ثبت عکس</button><span class="photo-status" id="photo-status-' + item.id + '"></span></div>';
+                    var rowWrapper = document.createElement('div');
+                    rowWrapper.style.width = '100%';
+                    rowWrapper.appendChild(textDiv);
+                    rowWrapper.appendChild(actionsDiv);
+                    rowWrapper.appendChild(failBox);
+                    row.appendChild(rowWrapper);
+                    body.appendChild(row);
+                });
+                accordion.appendChild(title);
+                accordion.appendChild(body);
+                container.appendChild(accordion);
+                if (sortedKeys.indexOf(systemName) === 0) { body.style.display = 'block'; }
+            });
+            updateProgress();
+        }
+
+        function setStatus(itemId, status) {
+            var item = currentItems.find(function(i) { return i.id === itemId; });
+            if (!item) return;
+            item.status = status;
+            var row = document.getElementById('row-' + itemId);
+            if (!row) return;
+            var okBtn = row.querySelector('.status-btn.ok');
+            var failBtn = row.querySelector('.status-btn.fail');
+            var failBox = document.getElementById('fail-box-' + itemId);
+            okBtn.classList.remove('active');
+            failBtn.classList.remove('active');
+            if (status === 'OK') {
+                okBtn.classList.add('active');
+                failBox.style.display = 'none';
+                document.getElementById('fail-desc-' + itemId).value = '';
+                document.getElementById('fail-action-' + itemId).value = '';
+                document.getElementById('photo-status-' + itemId).textContent = '';
+                item.failDesc = '';
+                item.failAction = '';
+                item.photoBase64 = null;
+                item.photoUrl = '';
+            } else {
+                failBtn.classList.add('active');
+                failBox.style.display = 'block';
+            }
+            updateProgress();
+            updateGroupBadges();
+        }
+
+        function capturePhoto(itemId) {
+            var item = currentItems.find(function(i) { return i.id === itemId; });
+            if (!item) return;
+            var isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isMobile) {
+                var input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.capture = 'environment';
+                input.onchange = function(e) {
+                    var file = e.target.files[0];
+                    if (!file) return;
+                    if (!file.type.startsWith('image/')) { showToast('⚠️ لطفاً یک فایل عکس انتخاب کنید.'); return; }
+                    var reader = new FileReader();
+                    reader.onload = function(event) {
+                        var photoData = event.target.result;
+                        item.photoBase64 = photoData;
+                        var statusEl = document.getElementById('photo-status-' + itemId);
+                        statusEl.textContent = '✅ عکس ثبت شد';
+                        statusEl.style.color = '#4caf50';
+                        var container = document.getElementById('fail-box-' + itemId);
+                        var oldImg = container.querySelector('img');
+                        if (oldImg) oldImg.remove();
+                        var img = document.createElement('img');
+                        img.src = photoData;
+                        img.style.width = '100%';
+                        img.style.maxHeight = '150px';
+                        img.style.borderRadius = '8px';
+                        img.style.marginTop = '8px';
+                        img.style.border = '2px solid #4caf50';
+                        img.style.objectFit = 'cover';
+                        container.appendChild(img);
+                        showToast('✅ عکس با موفقیت ثبت شد');
+                    };
+                    reader.readAsDataURL(file);
+                };
+                input.click();
+            } else {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { showToast('⚠️ مرورگر شما از دوربین پشتیبانی نمی‌کند.'); return; }
+                var constraints = { video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false };
+                navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+                    var video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.autoplay = true;
+                    video.style.width = '100%';
+                    video.style.maxHeight = '250px';
+                    video.style.borderRadius = '10px';
+                    video.style.marginBottom = '8px';
+                    video.style.background = '#000';
+                    var container = document.getElementById('fail-box-' + itemId);
+                    var oldVideo = container.querySelector('video');
+                    if (oldVideo) oldVideo.remove();
+                    var oldCanvas = container.querySelector('canvas');
+                    if (oldCanvas) oldCanvas.remove();
+                    var oldImg = container.querySelector('img');
+                    if (oldImg) oldImg.remove();
+                    container.appendChild(video);
+                    var shutterBtn = document.createElement('button');
+                    shutterBtn.innerHTML = '<i class="fas fa-camera"></i> شاتر (گرفتن عکس)';
+                    shutterBtn.style.cssText = 'background:rgba(244,67,54,0.15);border:1px solid rgba(244,67,54,0.25);color:#f44336;padding:8px 18px;border-radius:8px;font-family:Vazirmatn;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;transition:all 0.3s;';
+                    shutterBtn.onclick = function() {
+                        var canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth || 640;
+                        canvas.height = video.videoHeight || 480;
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        var photoData = canvas.toDataURL('image/jpeg', 0.85);
+                        item.photoBase64 = photoData;
+                        document.getElementById('photo-status-' + itemId).textContent = '✅ عکس ثبت شد';
+                        document.getElementById('photo-status-' + itemId).style.color = '#4caf50';
+                        stream.getTracks().forEach(function(track) { track.stop(); });
+                        video.remove();
+                        shutterBtn.remove();
+                        var img = document.createElement('img');
+                        img.src = photoData;
+                        img.style.width = '100%';
+                        img.style.maxHeight = '120px';
+                        img.style.borderRadius = '6px';
+                        img.style.marginTop = '6px';
+                        img.style.border = '2px solid #4caf50';
+                        container.appendChild(img);
+                        showToast('✅ عکس با موفقیت ثبت شد');
+                    };
+                    container.appendChild(shutterBtn);
+                    showToast('📷 دوربین فعال شد، روی شاتر کلیک کنید.');
+                }).catch(function(err) {
+                    console.error('خطا در دسترسی به دوربین:', err);
+                    var errorMsg = '❌ خطا در دسترسی به دوربین: ';
+                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') { errorMsg += 'لطفاً از تنظیمات مرورگر اجازه دسترسی به دوربین را بدهید.'; } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') { errorMsg += 'دوربینی در دستگاه شما یافت نشد.'; } else { errorMsg += err.message || 'خطای ناشناخته'; }
+                    showToast(errorMsg);
+                });
+            }
+        }
+
+        function updateProgress() {
+            var total = currentItems.length;
+            var done = currentItems.filter(function(i) { return i.status !== null; }).length;
+            var ok = currentItems.filter(function(i) { return i.status === 'OK'; }).length;
+            var fail = currentItems.filter(function(i) { return i.status === 'FAIL'; }).length;
+            var percent = total > 0 ? Math.round((done / total) * 100) : 0;
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').textContent = done + ' از ' + total;
+            document.getElementById('okCount').textContent = ok;
+            document.getElementById('failCount').textContent = fail;
+            var submitBtn = document.getElementById('submitBtn');
+            if (done === total && total > 0) { submitBtn.disabled = false; } else { submitBtn.disabled = true; }
+        }
+
+        function updateGroupBadges() {
+            var accordions = document.querySelectorAll('.accordion');
+            accordions.forEach(function(accordion) {
+                var title = accordion.querySelector('.accordion-title');
+                var body = accordion.querySelector('.accordion-body');
+                if (!title || !body) return;
+                var items = body.querySelectorAll('.item-row');
+                var done = 0;
+                items.forEach(function(row) {
+                    var okBtn = row.querySelector('.status-btn.ok');
+                    if (okBtn && okBtn.classList.contains('active')) done++;
+                    var failBtn = row.querySelector('.status-btn.fail');
+                    if (failBtn && failBtn.classList.contains('active')) done++;
+                });
+                var badge = title.querySelector('.badge-count');
+                if (badge) { badge.textContent = done + '/' + items.length; }
+            });
+        }
+
+        // ============================================================
+        // ثبت نهایی با مدت زمان
+        // ============================================================
+        function submitInspection() {
+            if (isSubmitting) return;
+            var total = currentItems.length;
+            var done = currentItems.filter(function(i) { return i.status !== null; }).length;
+            if (done < total) { showToast('⚠️ هنوز ' + (total - done) + ' آیتم بررسی نشده است!'); return; }
+            var results = [];
+            var hasFail = false;
+            currentItems.forEach(function(item) {
+                var failDesc = '';
+                var failAction = '';
+                var photoBase64 = null;
+                if (item.status === 'FAIL') {
+                    hasFail = true;
+                    failDesc = document.getElementById('fail-desc-' + item.id).value || '';
+                    failAction = document.getElementById('fail-action-' + item.id).value || '';
+                    photoBase64 = item.photoBase64 || null;
+                }
+                results.push({ itemId: item.itemId, status: item.status, failDesc: failDesc, failAction: failAction, photoBase64: photoBase64 });
+            });
+            if (hasFail) {
+                var failCount = currentItems.filter(function(i) { return i.status === 'FAIL'; }).length;
+                if (!confirm('⚠️ ' + failCount + ' مورد FAIL وجود دارد. آیا از ثبت بازرسی اطمینان دارید؟')) { return; }
+            }
+            isSubmitting = true;
+            var submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ثبت...';
+            submitBtn.disabled = true;
+            var duration = getDuration();
+            var payload = {
+                inspectionId: inspectionId,
+                date: getPersianDateOnly(),
+                time: getPersianTimeOnly(),
+                inspector: CURRENT_USER || 'بازرس',
+                station: SELECTED_STATION,
+                unit: SELECTED_UNIT,
+                frequency: SELECTED_FREQ,
+                duration: duration,
+                results: results
+            };
+            fetch(APP_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(function() {
+                showToast('✅ بازرسی با موفقیت ثبت شد!');
+                submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> ثبت شد';
+                submitBtn.style.background = 'linear-gradient(145deg, rgba(0,200,100,0.2), rgba(0,150,80,0.08))';
+                submitBtn.style.borderColor = 'rgba(0,200,100,0.3)';
+                submitBtn.style.color = '#4caf50';
+                setTimeout(function() {
+                    backToMain();
+                    isSubmitting = false;
+                    submitBtn.innerHTML = '<i class="fas fa-save"></i> ثبت و پایان بازرسی';
+                    submitBtn.style.background = '';
+                    submitBtn.style.borderColor = '';
+                    submitBtn.style.color = '';
+                }, 2000);
+            }).catch(function(error) {
+                console.error('خطا:', error);
+                showToast('❌ خطا در ارتباط با سرور: ' + error.message);
+                isSubmitting = false;
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> ثبت و پایان بازرسی';
+                submitBtn.disabled = false;
+            });
+        }
+
+        function showToast(message) {
+            var toast = document.getElementById('toast');
+            toast.innerHTML = message;
+            toast.classList.add('show');
+            toast.style.opacity = '1';
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(function() {
+                toast.classList.remove('show');
+                toast.style.opacity = '0';
+            }, 5000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('username').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { e.preventDefault();
+                    document.getElementById('password').focus(); }
+            });
+            document.getElementById('password').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { e.preventDefault();
+                    document.getElementById('loginForm').dispatchEvent(new Event('submit')); }
+            });
+        });
+    </script>
+
+</body>
+</html>
